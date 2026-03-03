@@ -456,18 +456,44 @@ export function TestRunClient({ run, initialModules }: { run: any, initialModule
                 </div>
 
                 {selectedResult.attachments?.length > 0 && (
-                  <div className="mt-4 space-y-2">
+                  <div className="mt-4 grid grid-cols-1 gap-3">
                     {selectedResult.attachments.map((a: any) => (
-                      <div key={a.id} className="flex items-center justify-between p-2 rounded-lg bg-muted/30 border text-xs">
-                        <div className="flex items-center gap-2 truncate">
-                          {a.fileType.startsWith('image/') ? <ImageIcon className="h-4 w-4" /> : 
-                           a.fileType.startsWith('video/') ? <Film className="h-4 w-4" /> : 
-                           <FileText className="h-4 w-4" />}
-                          <a href={a.filePath} target="_blank" className="truncate hover:underline">{a.filePath.split('-').slice(1).join('-')}</a>
+                      <div key={a.id} className="group relative rounded-lg border bg-muted/30 overflow-hidden">
+                        {a.fileType.startsWith('image/') ? (
+                          <div className="aspect-video relative bg-black/5">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img 
+                              src={a.filePath} 
+                              alt="Attachment" 
+                              className="object-contain w-full h-full" 
+                            />
+                          </div>
+                        ) : a.fileType.startsWith('video/') ? (
+                          <div className="aspect-video relative bg-black">
+                            <video 
+                              src={a.filePath} 
+                              controls 
+                              className="w-full h-full" 
+                            />
+                          </div>
+                        ) : (
+                          <div className="aspect-video flex items-center justify-center bg-muted">
+                            <FileText className="h-8 w-8 text-muted-foreground" />
+                          </div>
+                        )}
+                        
+                        <div className="p-2 flex items-center justify-between gap-2 text-xs border-t bg-background/50 backdrop-blur-sm">
+                           <a href={a.filePath} target="_blank" rel="noopener noreferrer" className="truncate hover:underline font-medium block flex-1 text-muted-foreground hover:text-foreground">
+                             {a.filePath.split('-').slice(1).join('-')}
+                           </a>
+                           <button 
+                             onClick={() => deleteAttachment(a.id)} 
+                             className="text-destructive hover:bg-destructive/10 p-1.5 rounded transition-colors"
+                             title="Delete attachment"
+                           >
+                             <Trash2 className="h-3.5 w-3.5" />
+                           </button>
                         </div>
-                        <button onClick={() => deleteAttachment(a.id)} className="text-destructive hover:bg-destructive/10 p-1 rounded">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
                       </div>
                     ))}
                   </div>

@@ -26,6 +26,11 @@ export class TestRunRepository {
             },
             attachments: true,
           },
+          orderBy: {
+            testCase: {
+              testId: 'asc'
+            }
+          }
         },
       },
     });

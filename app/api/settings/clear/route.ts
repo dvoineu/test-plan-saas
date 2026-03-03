@@ -1,14 +1,10 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { DatabaseService } from '@/domains/system/services/database.service';
 
 export async function POST() {
   try {
-    // Delete in order of dependencies
-    await prisma.testAttachment.deleteMany();
-    await prisma.testResult.deleteMany();
-    await prisma.testRun.deleteMany();
-    await prisma.testCase.deleteMany();
-    await prisma.module.deleteMany();
+    const databaseService = new DatabaseService();
+    await databaseService.clearAllData();
 
     return NextResponse.json({ success: true });
   } catch (error) {

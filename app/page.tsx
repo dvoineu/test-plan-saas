@@ -1,64 +1,11 @@
-import { prisma } from '@/lib/prisma';
+import { DashboardService } from '@/domains/reporting/services/dashboard.service';
 import { DashboardCharts } from '@/components/DashboardCharts';
 import { ImportButton } from '@/components/ImportButton';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
-  // Fetch stats
-  const totalCases = await prisma.testCase.count();
-  const totalRuns = await prisma.testRun.count();
-  
-  // For charts, we need the latest test run results or overall results.
-  // Let's get the latest test run
-  const latestRun = await prisma.testRun.findFirst({
-    orderBy: { createdAt: 'desc' },
-    include: {
-      testResults: {
-        include: {
-          testCase: {
-            include: { module: true }
-          }
-        }
-      }
-    }
-  });
-
-  let statusData = [
-    { name: 'Passed', value: 0, fill: '#22c55e' },
-    { name: 'Failed', value: 0, fill: '#ef4444' },
-    { name: 'Blocked', value: 0, fill: '#f97316' },
-    { name: 'Untested', value: 0, fill: '#94a3b8' },
-  ];
-
-  let moduleData: any[] = [];
-
-  if (latestRun) {
-    const counts = { PASSED: 0, FAILED: 0, BLOCKED: 0, UNTESTED: 0 };
-    const moduleStats: Record<string, { passed: number, total: number }> = {};
-
-    latestRun.testResults.forEach(result => {
-      counts[result.status as keyof typeof counts]++;
-      
-      const modName = result.testCase.module.name;
-      if (!moduleStats[modName]) {
-        moduleStats[modName] = { passed: 0, total: 0 };
-      }
-      moduleStats[modName].total++;
-      if (result.status === 'PASSED') {
-        moduleStats[modName].passed++;
-      }
-    });
-
-    statusData[0].value = counts.PASSED;
-    statusData[1].value = counts.FAILED;
-    statusData[2].value = counts.BLOCKED;
-    statusData[3].value = counts.UNTESTED;
-
-    moduleData = Object.keys(moduleStats).map(mod => ({
-      name: mod.length > 15 ? mod.substring(0, 15) + '...' : mod,
-      successRate: Math.round((moduleStats[mod].passed / moduleStats[mod].total) * 100)
-    }));
-  }
+  const dashboardService = new DashboardService();
+  const { totalCases, totalRuns, latestRun, statusData, moduleData } = await dashboardService.getDashboardStats();
 
   return (
     <div className="p-8 space-y-8">
