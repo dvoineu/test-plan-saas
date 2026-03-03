@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Module {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  testCases   TestCase[]
+}
+
+model TestCase {
+  id             String       @id @default(cuid())
+  testId         String
+  title          String
+  steps          String
+  expectedResult String
+  priority       String
+  moduleId       String
+  module         Module       @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  testResults    TestResult[]
+}
+
+model TestRun {
+  id          String       @id @default(cuid())
+  name        String
+  createdAt   DateTime     @default(now())
+  testResults TestResult[]
+}
+
+model TestResult {
+  id          String           @id @default(cuid())
+  status      String           @default("UNTESTED") // PASSED, FAILED, BLOCKED, UNTESTED
+  notes       String?
+  testRunId   String
+  testCaseId  String
+  testRun     TestRun          @relation(fields: [testRunId], references: [id], onDelete: Cascade)
+  testCase    TestCase         @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+  attachments TestAttachment[]
+
+  @@unique([testRunId, testCaseId])
+}
+
+model TestAttachment {
+  id           String     @id @default(cuid())
+  filePath     String
+  fileType     String
+  createdAt    DateTime   @default(now())
+  testResultId String
+  testResult   TestResult @relation(fields: [testResultId], references: [id], onDelete: Cascade)
+}
