@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { TestRunService } from '@/domains/test-execution/services/test-run.service';
 
 export async function PATCH(req: Request) {
   try {
@@ -9,12 +9,10 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: 'Result ID is required' }, { status: 400 });
     }
 
-    const updatedResult = await prisma.testResult.update({
-      where: { id: resultId },
-      data: {
-        status: status || undefined,
-        notes: notes !== undefined ? notes : undefined,
-      },
+    const testRunService = new TestRunService();
+    const updatedResult = await testRunService.updateResult(resultId, {
+      status: status || undefined,
+      notes: notes !== undefined ? notes : undefined,
     });
 
     return NextResponse.json(updatedResult);

@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { AttachmentService } from '@/domains/test-execution/services/attachment.service';
 
 export async function POST(req: Request) {
   try {
@@ -13,27 +11,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing file or resultId' }, { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    const uploadDir = join(process.cwd(), 'public', 'uploads');
-    
-    // Ensure directory exists
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (e) {}
-
-    const fileName = `${Date.now()}-${file.name}`;
-    const filePath = join(uploadDir, fileName);
-    await writeFile(filePath, buffer);
-
-    const attachment = await prisma.testAttachment.create({
-      data: {
-        filePath: `/uploads/${fileName}`,
-        fileType: file.type,
-        testResultId: resultId,
-      },
-    });
+    const attachmentService = new AttachmentService();
+    const attachment = await attachmentService.uploadAttachment(file, resultId);
 
     return NextResponse.json(attachment);
   } catch (error) {
