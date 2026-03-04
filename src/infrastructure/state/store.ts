@@ -4,8 +4,6 @@ import { create } from 'zustand';
 import type { TestStatus } from '@/domain/types';
 
 interface TestRunState {
-    activeProjectId: string | null;
-    setActiveProjectId: (id: string | null) => void;
     searchQuery: string;
     setSearchQuery: (query: string) => void;
     statusFilter: TestStatus | 'ALL';
@@ -22,9 +20,6 @@ interface TestRunState {
 }
 
 export const useTestRunStore = create<TestRunState>((set) => ({
-    activeProjectId: null,
-    setActiveProjectId: (id) => set({ activeProjectId: id }),
-
     searchQuery: '',
     setSearchQuery: (query) => set({ searchQuery: query }),
 

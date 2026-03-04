@@ -4,14 +4,14 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sparkles, FolderUp, Loader2 } from 'lucide-react';
 import { Modal } from '@/ui/shared/Modal';
-import { useTestRunStore } from '@/infrastructure/state/store';
+import { useProjectStore } from '@/infrastructure/state/useProjectStore';
 
 export function AIGenerateButton() {
     const [isOpen, setIsOpen] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [contextPrompt, setContextPrompt] = useState('');
     const [files, setFiles] = useState<{ path: string; content: string }[]>([]);
-    const activeProjectId = useTestRunStore((state) => state.activeProjectId);
+    const activeProjectId = useProjectStore((state) => state.activeProjectId);
     const router = useRouter();
 
     // Handle folder selection

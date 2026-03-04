@@ -1,6 +1,7 @@
 import type { IAttachmentRepository } from '../ports/repositories/IAttachmentRepository';
 import type { IStorageProvider } from '../ports/IStorageProvider';
 import type { Attachment } from '../types';
+import { NotFoundError } from '../errors';
 
 /**
  * Service: Attachment
@@ -32,7 +33,7 @@ export class AttachmentService {
     async deleteAttachment(id: string): Promise<void> {
         const attachment = await this.attachmentRepo.findById(id);
         if (!attachment) {
-            throw new Error('Attachment not found');
+            throw new NotFoundError('Attachment', id);
         }
 
         try {

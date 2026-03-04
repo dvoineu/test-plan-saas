@@ -1,5 +1,6 @@
-import { IProjectRepository } from '../ports/repositories/IProjectRepository';
-import { CreateProjectDTO, Project } from '../types';
+import type { IProjectRepository } from '../ports/repositories/IProjectRepository';
+import type { CreateProjectDTO, Project } from '../types';
+import { NotFoundError } from '../errors';
 
 /**
  * Service: Project Management
@@ -8,8 +9,10 @@ import { CreateProjectDTO, Project } from '../types';
 export class ProjectService {
     constructor(private readonly projectRepo: IProjectRepository) { }
 
-    async getProject(id: string): Promise<Project | null> {
-        return this.projectRepo.findById(id);
+    async getProject(id: string): Promise<Project> {
+        const project = await this.projectRepo.findById(id);
+        if (!project) throw new NotFoundError('Project', id);
+        return project;
     }
 
     async getAllProjects(): Promise<Project[]> {
@@ -21,10 +24,14 @@ export class ProjectService {
     }
 
     async updateProject(id: string, data: Partial<CreateProjectDTO>): Promise<Project> {
+        const existing = await this.projectRepo.findById(id);
+        if (!existing) throw new NotFoundError('Project', id);
         return this.projectRepo.update(id, data);
     }
 
     async deleteProject(id: string): Promise<void> {
+        const existing = await this.projectRepo.findById(id);
+        if (!existing) throw new NotFoundError('Project', id);
         return this.projectRepo.delete(id);
     }
 }

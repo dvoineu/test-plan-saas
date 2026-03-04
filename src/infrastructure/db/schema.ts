@@ -2,8 +2,9 @@ import { sqliteTable, text, integer, uniqueIndex } from 'drizzle-orm/sqlite-core
 import { createId } from '@paralleldrive/cuid2';
 
 export const settings = sqliteTable('Setting', {
-    id: text('id').primaryKey(),
+    key: text('key').primaryKey(),
     value: text('value').notNull(),
+    updatedAt: integer('updatedAt', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
 export const projects = sqliteTable('Project', {
@@ -34,6 +35,7 @@ export const testRuns = sqliteTable('TestRun', {
     id: text('id').primaryKey().$defaultFn(() => createId()),
     name: text('name').notNull(),
     createdAt: integer('createdAt', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+    updatedAt: integer('updatedAt', { mode: 'timestamp' }).$defaultFn(() => new Date()),
     projectId: text('projectId').notNull().references(() => projects.id, { onDelete: 'cascade' }),
 });
 
@@ -41,6 +43,7 @@ export const testResults = sqliteTable('TestResult', {
     id: text('id').primaryKey().$defaultFn(() => createId()),
     status: text('status').notNull().default('UNTESTED'),
     notes: text('notes'),
+    updatedAt: integer('updatedAt', { mode: 'timestamp' }).$defaultFn(() => new Date()),
     testRunId: text('testRunId').notNull().references(() => testRuns.id, { onDelete: 'cascade' }),
     testCaseId: text('testCaseId').notNull().references(() => testCases.id, { onDelete: 'cascade' }),
 }, (table) => ({

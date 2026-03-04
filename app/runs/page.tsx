@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, Calendar, ChevronRight, Edit2, Check, X, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { useTestRunStore } from '@/infrastructure/state/store';
+import { useProjectStore } from '@/infrastructure/state/useProjectStore';
 
 export default function RunsPage() {
   const [runs, setRuns] = useState<any[]>([]);
@@ -12,7 +12,7 @@ export default function RunsPage() {
   const [loading, setLoading] = useState(false);
   const [editingRunId, setEditingRunId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
-  const activeProjectId = useTestRunStore((state) => state.activeProjectId);
+  const activeProjectId = useProjectStore((state) => state.activeProjectId);
 
   useEffect(() => {
     if (activeProjectId) {

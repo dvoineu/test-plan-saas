@@ -1,17 +1,18 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
 import { aiBugReportService } from '@/infrastructure/container';
+import { withApiHandler } from '@/app/api/_lib/withApiHandler';
+import { generateBugReportSchema } from '@/app/api/_lib/schemas';
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-    try {
-        const { id } = await params;
-        const body = await req.json().catch(() => ({}));
-        const { contextPrompt } = body;
+export const POST = withApiHandler(async (
+    req: Request,
+    { params }: { params: Promise<{ id: string }> }
+) => {
+    const { id } = await params;
+    const body = await req.json().catch(() => ({}));
+    const { contextPrompt } = generateBugReportSchema.parse(body);
 
-        const reportMarkdown = await aiBugReportService.generateBugReport(id, contextPrompt);
-
-        return NextResponse.json({ success: true, report: reportMarkdown });
-    } catch (error: any) {
-        console.error(`API /api/runs/[id]/bug-report error for run ${error}:`, error);
-        return NextResponse.json({ error: error.message || 'Failed to generate bug report' }, { status: 500 });
-    }
-}
+    const reportMarkdown = await aiBugReportService.generateBugReport(id, contextPrompt);
+    return NextResponse.json({ success: true, report: reportMarkdown });
+});

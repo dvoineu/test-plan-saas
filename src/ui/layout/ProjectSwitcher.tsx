@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTestRunStore } from '@/infrastructure/state/store';
+import { useProjectStore } from '@/infrastructure/state/useProjectStore';
 import { FolderGit2, Plus, Check } from 'lucide-react';
 
 interface Project {
@@ -10,7 +10,7 @@ interface Project {
 }
 
 export function ProjectSwitcher() {
-    const { activeProjectId, setActiveProjectId } = useTestRunStore();
+    const { activeProjectId, setActiveProjectId } = useProjectStore();
     const [projects, setProjects] = useState<Project[]>([]);
     const [isCreating, setIsCreating] = useState(false);
     const [newProjectName, setNewProjectName] = useState('');

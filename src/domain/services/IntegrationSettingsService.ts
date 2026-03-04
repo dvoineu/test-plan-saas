@@ -1,24 +1,12 @@
 import { ISettingsRepository } from '../ports/repositories/ISettingsRepository';
-import { ILLMProvider } from '../ports/ILLMProvider';
-import { OllamaAdapter } from '@/adapters/llm/OllamaAdapter';
-import { GeminiAdapter } from '@/adapters/llm/GeminiAdapter';
-import { config } from '@/infrastructure/config';
 
+/**
+ * Service: Integration Settings
+ * Manages persisted settings for integrations (LLM, Jira, Slack).
+ * Pure domain — no knowledge of concrete adapters.
+ */
 export class IntegrationSettingsService {
-    constructor(private settingsRepo: ISettingsRepository) { }
-
-    async getLLMProvider(): Promise<ILLMProvider> {
-        const provider = await this.settingsRepo.get('llm_provider') || config.llm.provider;
-        const model = await this.settingsRepo.get('llm_model') || config.llm.model;
-
-        if (provider === 'ollama') {
-            const baseUrl = await this.settingsRepo.get('llm_base_url') || config.llm.baseUrl;
-            return new OllamaAdapter(baseUrl, model);
-        } else {
-            const apiKey = await this.settingsRepo.get('llm_api_key') || config.llm.apiKey;
-            return new GeminiAdapter(apiKey || '', model);
-        }
-    }
+    constructor(private readonly settingsRepo: ISettingsRepository) { }
 
     async getSettings() {
         return this.settingsRepo.getAll([

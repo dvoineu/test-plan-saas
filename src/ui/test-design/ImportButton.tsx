@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import { UploadCloud } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useTestRunStore } from '@/infrastructure/state/store';
+import { useProjectStore } from '@/infrastructure/state/useProjectStore';
 
 export function ImportButton() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const router = useRouter();
-  const activeProjectId = useTestRunStore((state) => state.activeProjectId);
+  const activeProjectId = useProjectStore((state) => state.activeProjectId);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (loading) return;

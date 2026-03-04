@@ -1,4 +1,4 @@
-import { IntegrationSettingsService } from './IntegrationSettingsService';
+import type { ILLMProviderFactory } from '../ports/ILLMProviderFactory';
 
 export interface CodeFile {
     path: string;
@@ -17,11 +17,16 @@ export interface GeneratedModule {
     testCases: GeneratedTestCase[];
 }
 
+/**
+ * Service: AI Test Generation
+ * Generates test plans from source code files using an LLM.
+ * Depends on ILLMProviderFactory port — no knowledge of concrete providers.
+ */
 export class AITestGenerationService {
-    constructor(private aiSettingsService: IntegrationSettingsService) { }
+    constructor(private readonly llmProviderFactory: ILLMProviderFactory) { }
 
     async generateTestPlan(files: CodeFile[], contextPrompt?: string): Promise<GeneratedModule[]> {
-        const provider = await this.aiSettingsService.getLLMProvider();
+        const provider = await this.llmProviderFactory.create();
 
         const systemPrompt = `You are an expert QA Engineer. 
 Your task is to analyze the provided source code files and generate a comprehensive Test Plan.

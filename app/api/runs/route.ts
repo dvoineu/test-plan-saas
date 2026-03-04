@@ -1,35 +1,25 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
 import { testRunService } from '@/infrastructure/container';
+import { withApiHandler } from '../_lib/withApiHandler';
+import { createRunSchema } from '../_lib/schemas';
 
-export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const projectId = searchParams.get('projectId');
+export const GET = withApiHandler(async (req: Request) => {
+  const { searchParams } = new URL(req.url);
+  const projectId = searchParams.get('projectId');
 
-    if (!projectId) {
-      return NextResponse.json({ error: 'projectId is required' }, { status: 400 });
-    }
-
-    const runs = await testRunService.getAllRuns(projectId);
-    return NextResponse.json(runs);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch runs' }, { status: 500 });
+  if (!projectId) {
+    return NextResponse.json({ error: 'projectId is required', code: 'VALIDATION_ERROR' }, { status: 400 });
   }
-}
 
-export async function POST(req: Request) {
-  try {
-    const { name, projectId } = await req.json();
+  const runs = await testRunService.getAllRuns(projectId);
+  return NextResponse.json(runs);
+});
 
-    if (!name || !projectId) {
-      return NextResponse.json({ error: 'Name and projectId are required' }, { status: 400 });
-    }
-
-    const run = await testRunService.createRun(name, projectId);
-
-    return NextResponse.json(run);
-  } catch (error) {
-    console.error('Error creating run:', error);
-    return NextResponse.json({ error: 'Failed to create run' }, { status: 500 });
-  }
-}
+export const POST = withApiHandler(async (req: Request) => {
+  const body = await req.json();
+  const { name, projectId } = createRunSchema.parse(body);
+  const run = await testRunService.createRun(name, projectId);
+  return NextResponse.json(run);
+});

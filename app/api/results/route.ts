@@ -1,22 +1,18 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
 import { testRunService } from '@/infrastructure/container';
+import { withApiHandler } from '@/app/api/_lib/withApiHandler';
+import { updateResultSchema } from '@/app/api/_lib/schemas';
 
-export async function PATCH(req: Request) {
-  try {
-    const { resultId, status, notes } = await req.json();
+export const PATCH = withApiHandler(async (req: Request) => {
+  const body = await req.json();
+  const { resultId, status, notes } = updateResultSchema.parse(body);
 
-    if (!resultId) {
-      return NextResponse.json({ error: 'Result ID is required' }, { status: 400 });
-    }
+  const updatedResult = await testRunService.updateResult(resultId, {
+    status: status || undefined,
+    notes: notes !== undefined ? notes : undefined,
+  });
 
-    const updatedResult = await testRunService.updateResult(resultId, {
-      status: status || undefined,
-      notes: notes !== undefined ? notes : undefined,
-    });
-
-    return NextResponse.json(updatedResult);
-  } catch (error) {
-    console.error('Error updating result:', error);
-    return NextResponse.json({ error: 'Failed to update result' }, { status: 500 });
-  }
-}
+  return NextResponse.json(updatedResult);
+});

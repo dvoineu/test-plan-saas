@@ -1,18 +1,14 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
 import { attachmentService } from '@/infrastructure/container';
+import { withApiHandler } from '@/app/api/_lib/withApiHandler';
 
-export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  try {
-    const { id } = await params;
-
-    await attachmentService.deleteAttachment(id);
-
-    return NextResponse.json({ success: true });
-  } catch (error: any) {
-    if (error.message === 'Attachment not found') {
-      return NextResponse.json({ error: 'Attachment not found' }, { status: 404 });
-    }
-    console.error('Error deleting attachment:', error);
-    return NextResponse.json({ error: 'Failed to delete attachment' }, { status: 500 });
-  }
-}
+export const DELETE = withApiHandler(async (
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) => {
+  const { id } = await params;
+  await attachmentService.deleteAttachment(id);
+  return NextResponse.json({ success: true });
+});

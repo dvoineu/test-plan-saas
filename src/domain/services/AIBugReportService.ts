@@ -1,22 +1,28 @@
-import { IntegrationSettingsService } from './IntegrationSettingsService';
-import { TestRunService } from './TestRunService';
+import type { ILLMProviderFactory } from '../ports/ILLMProviderFactory';
+import type { ITestRunRepository } from '../ports/repositories/ITestRunRepository';
+import { NotFoundError } from '../errors';
 
+/**
+ * Service: AI Bug Report
+ * Generates bug reports from failed/blocked test results using an LLM.
+ * Depends only on ports — no knowledge of concrete implementations.
+ */
 export class AIBugReportService {
     constructor(
-        private aiSettingsService: IntegrationSettingsService,
-        private testRunService: TestRunService
+        private readonly llmProviderFactory: ILLMProviderFactory,
+        private readonly testRunRepo: ITestRunRepository,
     ) { }
 
     async generateBugReport(runId: string, contextPrompt?: string): Promise<string> {
-        const run = await this.testRunService.getRunById(runId);
-        if (!run) throw new Error('Test run not found');
+        const run = await this.testRunRepo.findById(runId);
+        if (!run) throw new NotFoundError('TestRun', runId);
 
         const failedResults = run.testResults.filter(r => r.status === 'FAILED' || r.status === 'BLOCKED');
         if (failedResults.length === 0) {
             return '# No bugs found!\n\nAll tests passed successfully or were untested.';
         }
 
-        const provider = await this.aiSettingsService.getLLMProvider();
+        const provider = await this.llmProviderFactory.create();
 
         const systemPrompt = `You are a Senior QA Engineer.
 Your task is to analyze the following failed and blocked test cases from a test run, and generate a professional, structured Bug Report for the development team.
