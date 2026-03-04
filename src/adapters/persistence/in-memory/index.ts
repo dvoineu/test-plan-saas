@@ -27,6 +27,10 @@ export class InMemoryModuleRepository implements IModuleRepository {
 export class InMemoryTestCaseRepository implements ITestCaseRepository {
     private cases: TestCase[] = [];
 
+    async findById(id: string): Promise<TestCase | null> {
+        return this.cases.find(c => c.id === id) ?? null;
+    }
+
     async findByTestId(testId: string): Promise<TestCase | null> {
         return this.cases.find(c => c.testId === testId) ?? null;
     }
@@ -39,6 +43,17 @@ export class InMemoryTestCaseRepository implements ITestCaseRepository {
         const testCase: TestCase = { id: Math.random().toString(), ...data };
         this.cases.push(testCase);
         return testCase;
+    }
+
+    async update(id: string, data: Partial<CreateTestCaseDTO>): Promise<TestCase> {
+        const idx = this.cases.findIndex(c => c.id === id);
+        if (idx === -1) throw new Error('TestCase not found');
+        this.cases[idx] = { ...this.cases[idx], ...data };
+        return this.cases[idx];
+    }
+
+    async delete(id: string): Promise<void> {
+        this.cases = this.cases.filter(c => c.id !== id);
     }
 
     async count(): Promise<number> {

@@ -5,6 +5,11 @@ import type { ITestCaseRepository } from '@/domain/ports/repositories/ITestCaseR
 import type { TestCase, CreateTestCaseDTO } from '@/domain/types';
 
 export class DrizzleTestCaseRepository implements ITestCaseRepository {
+    async findById(id: string): Promise<TestCase | null> {
+        const result = await db.select().from(testCases).where(eq(testCases.id, id)).limit(1);
+        return result[0] ?? null;
+    }
+
     async findByTestId(testId: string): Promise<TestCase | null> {
         const result = await db.select().from(testCases).where(eq(testCases.testId, testId)).limit(1);
         return result[0] ?? null;
@@ -39,6 +44,19 @@ export class DrizzleTestCaseRepository implements ITestCaseRepository {
             moduleId: data.moduleId,
         }).returning();
         return result[0];
+    }
+
+    async update(id: string, data: Partial<CreateTestCaseDTO>): Promise<TestCase> {
+        const result = await db.update(testCases)
+            .set(data)
+            .where(eq(testCases.id, id))
+            .returning();
+        if (result.length === 0) throw new Error('TestCase not found');
+        return result[0];
+    }
+
+    async delete(id: string): Promise<void> {
+        await db.delete(testCases).where(eq(testCases.id, id));
     }
 
     async count(): Promise<number> {

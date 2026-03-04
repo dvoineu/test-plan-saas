@@ -113,6 +113,40 @@ export interface FlakyTest {
   failureRate: number;
 }
 
+export interface PriorityDistribution {
+  priority: string;
+  count: number;
+  fill: string;
+}
+
+export interface RecentRunSummary {
+  id: string;
+  name: string;
+  createdAt: Date;
+  total: number;
+  passed: number;
+  failed: number;
+  blocked: number;
+  untested: number;
+  passRate: number;
+}
+
+export interface ActivityItem {
+  id: string;
+  type: 'run_created' | 'run_completed' | 'cases_imported' | 'result_updated';
+  message: string;
+  timestamp: Date;
+  meta?: Record<string, unknown>;
+}
+
+export interface ModuleCoverage {
+  id: string;
+  name: string;
+  totalCases: number;
+  testedCases: number;
+  passRate: number;
+}
+
 export interface DashboardData {
   totalCases: number;
   totalRuns: number;
@@ -121,6 +155,23 @@ export interface DashboardData {
   moduleData: ModuleStats[];
   history: HistoricalData[];
   flakyTests: FlakyTest[];
+  // P0 — new fields
+  passRate: number;
+  lastRunDate: string | null;
+  // P1 — trend deltas
+  casesDelta: number;
+  runsDelta: number;
+  passRateDelta: number;
+  // P1 — priority distribution
+  priorityDistribution: PriorityDistribution[];
+  // P1 — recent runs
+  recentRuns: RecentRunSummary[];
+  // P2 — activity feed
+  activities: ActivityItem[];
+  // P2 — coverage by module
+  coverageByModule: ModuleCoverage[];
+  // P2 — health score (0-100)
+  healthScore: number;
 }
 
 // ─── Test Run with full nested data ──────────────────────────

@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ListChecks, Settings } from 'lucide-react';
+import { LayoutDashboard, ListChecks, Settings, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProjectSwitcher } from './ProjectSwitcher';
 
 const navItems = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Test Cases', href: '/test-cases', icon: ClipboardList },
   { name: 'Test Runs', href: '/runs', icon: ListChecks },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];

@@ -68,3 +68,24 @@ export const createJiraIssueSchema = z.object({
     description: z.string().optional(),
     issueType: z.string().optional(),
 });
+
+// ─── Test Cases ──────────────────────────────────────────────
+
+export const createTestCaseSchema = z.object({
+    testId: z.string().min(1, 'Test ID is required').max(50),
+    title: z.string().min(1, 'Title is required').max(500),
+    steps: z.string().min(1, 'Steps are required'),
+    expectedResult: z.string().min(1, 'Expected result is required'),
+    priority: z.enum(['P1', 'P2', 'P3', 'P4']),
+    moduleId: z.string().min(1, 'Module ID is required'),
+});
+
+export const updateTestCaseSchema = z.object({
+    testId: z.string().min(1).max(50).optional(),
+    title: z.string().min(1).max(500).optional(),
+    steps: z.string().min(1).optional(),
+    expectedResult: z.string().min(1).optional(),
+    priority: z.enum(['P1', 'P2', 'P3', 'P4']).optional(),
+    moduleId: z.string().min(1).optional(),
+});
+
