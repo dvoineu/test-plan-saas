@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+.electron-titlebar {
+  display: none;
+  -webkit-app-region: drag;
+}
+
+.electron-titlebar-content {
+  -webkit-app-region: no-drag;
+}
+
+html.is-electron .electron-titlebar {
+  display: flex;
+}

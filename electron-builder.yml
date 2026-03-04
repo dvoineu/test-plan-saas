@@ -1,0 +1,82 @@
+appId: com.testplan.manager
+productName: Test Plan Manager
+copyright: Copyright © 2024
+
+directories:
+  output: dist
+  buildResources: build
+
+files:
+  - .next/**/*
+  - public/**/*
+  - node_modules/**/*
+  - electron/**/*
+  - prisma/**/*
+  - package.json
+
+extraResources:
+  - from: prisma
+    to: prisma
+    filter:
+      - "**/*"
+
+asar: true
+
+mac:
+  category: public.app-category.developer-tools
+  icon: build/icon.icns
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: mas
+      arch:
+        - x64
+        - arm64
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  provisioningProfile: build/embedded.provisionprofile
+
+mas:
+  icon: build/icon.icns
+  entitlements: build/entitlements.mas.plist
+  entitlementsInherit: build/entitlements.mas.inherit.plist
+  provisioningProfile: build/embedded.provisionprofile
+
+win:
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+        - ia32
+    - target: msix
+      arch:
+        - x64
+        - ia32
+
+nsis:
+  oneClick: false
+  perMachine: true
+  allowToChangeInstallationDirectory: true
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+
+msix:
+  identityName: TestPlanManager
+  publisher: CN=YourPublisherID
+  displayName: Test Plan Manager
+
+linux:
+  icon: build/icons
+  target:
+    - AppImage
+    - deb
+  category: Development
+
+publish:
+  provider: generic
+  url: https://your-update-server.com

@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports: ["3000:3000"]
+    environment:
+      DB_PROVIDER: postgresql
+      DATABASE_URL: postgresql://qauser:qapass@db:5432/testplanner
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/uploads
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: qauser
+      POSTGRES_PASSWORD: qapass
+      POSTGRES_DB: testplanner
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qauser"]
+      interval: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  uploads:

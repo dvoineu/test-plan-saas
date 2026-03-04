@@ -1,10 +1,16 @@
 import { NextResponse } from 'next/server';
-import { TestRunService } from '@/domains/test-execution/services/test-run.service';
+import { testRunService } from '@/infrastructure/container';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const testRunService = new TestRunService();
-    const runs = await testRunService.getAllRuns();
+    const { searchParams } = new URL(req.url);
+    const projectId = searchParams.get('projectId');
+
+    if (!projectId) {
+      return NextResponse.json({ error: 'projectId is required' }, { status: 400 });
+    }
+
+    const runs = await testRunService.getAllRuns(projectId);
     return NextResponse.json(runs);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch runs' }, { status: 500 });
@@ -13,14 +19,13 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const { name } = await req.json();
-    
-    if (!name) {
-      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    const { name, projectId } = await req.json();
+
+    if (!name || !projectId) {
+      return NextResponse.json({ error: 'Name and projectId are required' }, { status: 400 });
     }
 
-    const testRunService = new TestRunService();
-    const run = await testRunService.createRun(name);
+    const run = await testRunService.createRun(name, projectId);
 
     return NextResponse.json(run);
   } catch (error) {

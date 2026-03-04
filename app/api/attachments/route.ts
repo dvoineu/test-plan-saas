@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { AttachmentService } from '@/domains/test-execution/services/attachment.service';
+import { attachmentService } from '@/infrastructure/container';
 
 export async function POST(req: Request) {
   try {
@@ -11,7 +11,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing file or resultId' }, { status: 400 });
     }
 
-    const attachmentService = new AttachmentService();
     const attachment = await attachmentService.uploadAttachment(file, resultId);
 
     return NextResponse.json(attachment);

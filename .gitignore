@@ -5,3 +5,29 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Electron build output
+dist/
+out/
+
+# Electron compiled files
+main.js
+main.js.map
+preload.js
+preload.js.map
+
+# macOS
+*.dmg
+*.app
+
+# Windows
+*.exe
+*.msi
+*.nsis
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

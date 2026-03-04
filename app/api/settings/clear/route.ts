@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { DatabaseService } from '@/domains/system/services/database.service';
+import { databaseService } from '@/infrastructure/container';
 
 export async function POST() {
   try {
-    const databaseService = new DatabaseService();
     await databaseService.clearAllData();
 
     return NextResponse.json({ success: true });

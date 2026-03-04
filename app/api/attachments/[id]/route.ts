@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
-import { AttachmentService } from '@/domains/test-execution/services/attachment.service';
+import { attachmentService } from '@/infrastructure/container';
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
 
-    const attachmentService = new AttachmentService();
     await attachmentService.deleteAttachment(id);
 
     return NextResponse.json({ success: true });
