@@ -158,7 +158,15 @@ export default function SettingsPage() {
                   >
                     <option value="ollama">Ollama (Local / Free)</option>
                     <option value="gemini">Google Gemini</option>
+                    <option value="openrouter">OpenRouter</option>
+                    <option value="openai-compatible">OpenAI-compatible</option>
                   </select>
+                  {provider === 'openrouter' && (
+                    <p className="text-xs text-muted-foreground">Access 200+ models (GPT-4o, Claude, Llama, Mistral…) via a single API key from <a href="https://openrouter.ai" target="_blank" rel="noreferrer" className="underline text-primary hover:text-primary/80">openrouter.ai</a></p>
+                  )}
+                  {provider === 'openai-compatible' && (
+                    <p className="text-xs text-muted-foreground">Any server exposing the OpenAI /v1/chat/completions endpoint (OpenAI, Mistral, Together, Groq, LM Studio, vLLM…)</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -167,32 +175,43 @@ export default function SettingsPage() {
                     type="text"
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
-                    placeholder={provider === 'ollama' ? 'llama3, phi3, mistral' : 'gemini-1.5-flash'}
+                    placeholder={
+                      provider === 'ollama' ? 'llama3, phi3, mistral' :
+                        provider === 'gemini' ? 'gemini-2.5-flash' :
+                          provider === 'openrouter' ? 'openai/gpt-4o-mini, anthropic/claude-3.5-sonnet' :
+                            'gpt-4o-mini, mistral-large-latest'
+                    }
                     className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground"
                   />
                 </div>
 
-                {provider === 'ollama' && (
+                {/* Base URL — shown for Ollama and OpenAI-compatible */}
+                {(provider === 'ollama' || provider === 'openai-compatible') && (
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Ollama Base URL</label>
+                    <label className="text-sm font-medium">Base URL</label>
                     <input
                       type="text"
                       value={baseUrl}
                       onChange={(e) => setBaseUrl(e.target.value)}
-                      placeholder="http://localhost:11434"
+                      placeholder={provider === 'ollama' ? 'http://localhost:11434' : 'https://api.openai.com/v1'}
                       className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground"
                     />
                   </div>
                 )}
 
-                {provider === 'gemini' && (
+                {/* API Key — shown for everything except Ollama */}
+                {provider !== 'ollama' && (
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Gemini API Key</label>
+                    <label className="text-sm font-medium">API Key</label>
                     <input
                       type="password"
                       value={apiKey}
                       onChange={(e) => setApiKey(e.target.value)}
-                      placeholder="AIzaSy..."
+                      placeholder={
+                        provider === 'gemini' ? 'AIzaSy...' :
+                          provider === 'openrouter' ? 'sk-or-v1-...' :
+                            'sk-...'
+                      }
                       className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground"
                     />
                   </div>

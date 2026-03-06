@@ -31,3 +31,12 @@ preload.js.map
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# IDE
+.idea/
+
+# Database
+dev.db*
+
+# Build Cache
+tsconfig.tsbuildinfo

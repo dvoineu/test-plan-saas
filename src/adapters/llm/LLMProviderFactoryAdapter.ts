@@ -3,6 +3,8 @@ import type { ILLMProvider } from '@/domain/ports/ILLMProvider';
 import type { ISettingsRepository } from '@/domain/ports/repositories/ISettingsRepository';
 import { OllamaAdapter } from './OllamaAdapter';
 import { GeminiAdapter } from './GeminiAdapter';
+import { OpenAICompatibleAdapter } from './OpenAICompatibleAdapter';
+import { OpenRouterAdapter } from './OpenRouterAdapter';
 import { config } from '@/infrastructure/config';
 
 /**
@@ -22,6 +24,18 @@ export class LLMProviderFactoryAdapter implements ILLMProviderFactory {
             return new OllamaAdapter(baseUrl, model);
         }
 
+        if (provider === 'openrouter') {
+            const apiKey = await this.settingsRepo.get('llm_api_key') || config.llm.apiKey;
+            return new OpenRouterAdapter(apiKey || '', model);
+        }
+
+        if (provider === 'openai-compatible') {
+            const apiKey = await this.settingsRepo.get('llm_api_key') || config.llm.apiKey;
+            const baseUrl = await this.settingsRepo.get('llm_base_url') || config.llm.baseUrl || 'https://api.openai.com/v1';
+            return new OpenAICompatibleAdapter(baseUrl, apiKey || '', model);
+        }
+
+        // Default: Gemini
         const apiKey = await this.settingsRepo.get('llm_api_key') || config.llm.apiKey;
         return new GeminiAdapter(apiKey || '', model);
     }
